@@ -1,6 +1,6 @@
 # cake-store
 
-# DB Migration
+### DB Migration
 pastikan bahwa anda telah menginstal golang-migrate
 jika belum anda bisa melihat dokumentasinya di [sini](https://github.com/golang-migrate/migrate)
 
