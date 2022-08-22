@@ -5,4 +5,5 @@ CREATE TABLE `cake`(
     `rating` FLOAT, 
     `image` VARCHAR(255), 
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL , 
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP , 
     PRIMARY KEY (`id`));
