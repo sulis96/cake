@@ -7,8 +7,8 @@ import (
 type (
 	Cake struct {
 		Id          int       `json:"id"`
-		Title       string    `json:"title"`
-		Description string    `json:"description"`
+		Title       string    `json:"title" validate:"required"`
+		Description string    `json:"description" validate:"required"`
 		Rating      float64   `json:"rating"`
 		Image       string    `json:"image"`
 		CreatedAt   time.Time `json:"created_at"`
@@ -19,13 +19,6 @@ type (
 		Id    int    `json:"id"`
 		Title string `json:"title"`
 	}
-
-	Response struct {
-		Success bool        `json:"success"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data"`
-	}
-
 	Error struct {
 		Code    int    `json:"code"`
 		Status  string `json:"error"`

@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	defer database.Close()
 
 	// Health Check
 	err = database.Ping()

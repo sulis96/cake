@@ -8,3 +8,8 @@ migration database dengan command line:
 ```bash
 migrate -path db/migration -database "mysql://root:@tcp(localhost:3306)/cake" up 1
 ```
+
+### Running App In Local
+```bash
+go run main.go
+```

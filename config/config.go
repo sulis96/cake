@@ -11,7 +11,6 @@ import (
 func MySqlDatabase() (*sql.DB, error) {
 	dbConfig := fmt.Sprintf("%v:%v@/%v?parseTime=true", "root", "", "cake")
 	db, err := sql.Open("mysql", dbConfig)
-
 	if err != nil {
 		return nil, err
 	}
