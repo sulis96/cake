@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"CAKE-STORE/config"
 	"CAKE-STORE/entity"
 	"CAKE-STORE/service"
 	"CAKE-STORE/utils"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -25,6 +27,7 @@ type (
 		AddNewCake(w http.ResponseWriter, r *http.Request, p httprouter.Params)
 		UpdateCake(w http.ResponseWriter, r *http.Request, p httprouter.Params)
 		DeleteCake(w http.ResponseWriter, r *http.Request, p httprouter.Params)
+		HealthCheck(w http.ResponseWriter, r *http.Request, p httprouter.Params)
 	}
 )
 
@@ -32,6 +35,24 @@ func NewCakeController(cakeService *service.CakeService) CakeController {
 	return &cakeController{
 		CakeService: *cakeService,
 	}
+}
+
+func (cc *cakeController) HealthCheck(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	database, err := config.MySqlDatabase()
+	if err != nil {
+		log.Panic(err)
+	}
+	defer database.Close()
+
+	err = database.Ping()
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Status OK"))
 }
 
 func (cc *cakeController) ListCake(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

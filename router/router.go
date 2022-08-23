@@ -32,5 +32,7 @@ func (cr *cakeRouter) Route() {
 	router.PATCH("/cakes/:{id}", cr.CakeController.UpdateCake)
 	router.DELETE("/cakes/:{id}", cr.CakeController.DeleteCake)
 
+	router.POST("/ping", cr.CakeController.HealthCheck)
+
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
