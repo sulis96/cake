@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"CAKE-STORE/config"
 	"CAKE-STORE/entity"
 	"context"
 	"database/sql"
@@ -31,9 +30,9 @@ func NewCakeRepository(database *sql.DB) CakeRepository {
 	}
 }
 
-func (mcr *cakeRepository) GetDetailCake(ctx context.Context, id int) (entity.Cake, error) {
+func (cr *cakeRepository) GetDetailCake(ctx context.Context, id int) (entity.Cake, error) {
 	var cake entity.Cake
-	db, err := config.MySqlDatabase()
+	db, err := cr.DB.Conn(ctx)
 	if err != nil {
 		err = errors.New("GET DETAIL CAKE -> CAN'T CONNECT TO MY SQL DB : " + err.Error())
 		return cake, err
@@ -79,12 +78,12 @@ func (mcr *cakeRepository) GetDetailCake(ctx context.Context, id int) (entity.Ca
 	return cake, nil
 }
 
-func (mcr *cakeRepository) GetListCake(ctx context.Context, title string) ([]entity.ListCake, error) {
+func (cr *cakeRepository) GetListCake(ctx context.Context, title string) ([]entity.ListCake, error) {
 	var (
 		cakes []entity.ListCake
 		cake  = entity.ListCake{}
 	)
-	db, err := config.MySqlDatabase()
+	db, err := cr.DB.Conn(ctx)
 	if err != nil {
 		err = errors.New("GET LIST CAKE -> CAN'T CONNECT TO MY SQL DB : " + err.Error())
 		return nil, err
@@ -118,7 +117,7 @@ func (mcr *cakeRepository) GetListCake(ctx context.Context, title string) ([]ent
 }
 
 func (cr *cakeRepository) InsertCake(ctx context.Context, cake entity.Cake) error {
-	db, err := config.MySqlDatabase()
+	db, err := cr.DB.Conn(ctx)
 	if err != nil {
 		err = errors.New("INSERT CAKE -> CAN'T CONNECT TO MY SQL DB : " + err.Error())
 		return err
@@ -138,7 +137,7 @@ func (cr *cakeRepository) InsertCake(ctx context.Context, cake entity.Cake) erro
 }
 
 func (cr *cakeRepository) UpdateCake(ctx context.Context, id int, cake entity.Cake) error {
-	db, err := config.MySqlDatabase()
+	db, err := cr.DB.Conn(ctx)
 	if err != nil {
 		err = errors.New("UPDATE CAKE -> CAN'T CONNECT TO MY SQL DB : " + err.Error())
 		return err
@@ -178,7 +177,7 @@ func (cr *cakeRepository) UpdateCake(ctx context.Context, id int, cake entity.Ca
 	}
 	query = query + " WHERE `id`=?"
 
-	row, err := db.Query(query, id)
+	row, err := db.QueryContext(ctx, query, id)
 	if err != nil {
 		err = errors.New("UPDATE CAKE -> FAILED TO UPDATE DATA :" + err.Error())
 		return err
@@ -188,7 +187,7 @@ func (cr *cakeRepository) UpdateCake(ctx context.Context, id int, cake entity.Ca
 }
 
 func (cr *cakeRepository) DeleteCake(ctx context.Context, id int) error {
-	db, err := config.MySqlDatabase()
+	db, err := cr.DB.Conn(ctx)
 	if err != nil {
 		err = errors.New("DELETE CAKE -> CAN'T CONNECT TO MY SQL DB : " + err.Error())
 		return err
@@ -208,7 +207,7 @@ func (cr *cakeRepository) DeleteCake(ctx context.Context, id int) error {
 
 	query := fmt.Sprintf("DELETE FROM `%v` WHERE `id`=%v", "cake", id)
 
-	_, err = db.QueryContext(ctx, query)
+	_, err = cr.DB.QueryContext(ctx, query)
 	if err != nil {
 		err = errors.New("DELETE CAKE -> FAILED TO DELETE DATA :" + err.Error())
 		return err
