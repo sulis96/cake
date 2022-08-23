@@ -44,6 +44,7 @@ func (cr *cakeRepository) GetDetailCake(ctx context.Context, id int) (entity.Cak
 	title, 
 	description, 
 	COALESCE(rating,0.00),
+	image,
 	created_at, 
 	COALESCE(updated_at, created_at)
 	FROM cake 
@@ -62,6 +63,7 @@ func (cr *cakeRepository) GetDetailCake(ctx context.Context, id int) (entity.Cak
 			&cake.Title,
 			&cake.Description,
 			&cake.Rating,
+			&cake.Image,
 			&cake.CreatedAt,
 			&cake.UpdatedAt)
 		if err != nil {
@@ -144,10 +146,10 @@ func (cr *cakeRepository) UpdateCake(ctx context.Context, id int, cake entity.Ca
 	}
 	defer db.Close()
 
-	var title string
-	err = db.QueryRowContext(ctx, "SELECT title from cake WHERE id = ?", id).Scan(&title)
+	var existCake = entity.Cake{}
+	err = db.QueryRowContext(ctx, "SELECT title, description, rating, image from cake WHERE id = ?", id).Scan(&existCake.Title, &existCake.Description, &existCake.Rating, &existCake.Image)
 
-	if title == "" {
+	if existCake.Title == "" {
 		err = errors.New("UPDATE CAKE -> NO DATA WITH ID =" + fmt.Sprintf("%v", id))
 		return err
 	}
@@ -156,28 +158,9 @@ func (cr *cakeRepository) UpdateCake(ctx context.Context, id int, cake entity.Ca
 		return err
 	}
 
-	query := "UPDATE `cake` SET "
-	var params = []string{cake.Title, cake.Description, cake.Image, fmt.Sprintf("%v", cake.Rating)}
-	for i, j := range params {
-		if j == cake.Title && j != "" {
-			query = query + "`title`='" + j + "'"
-		}
-		if j == cake.Description && j != "" {
-			query = query + "`description`='" + j + "'"
-		}
-		if j == fmt.Sprintf("%v", cake.Rating) && j != "" {
-			query = query + "`rating`=" + j + ""
-		}
-		if j == cake.Image && j != "" {
-			query = query + "`image`='" + j + "'"
-		}
-		if i != len(params)-1 && j != "" {
-			query = query + ","
-		}
-	}
-	query = query + " WHERE `id`=?"
+	var query = fmt.Sprintf("UPDATE `%v` SET `updated_at` = current_timestamp(), `title`='%v', `description`='%v', `rating`=%v, `image`='%v' WHERE `id`=%v", "cake", cake.Title, cake.Description, cake.Rating, cake.Image, id)
 
-	row, err := db.QueryContext(ctx, query, id)
+	row, err := db.QueryContext(ctx, query)
 	if err != nil {
 		err = errors.New("UPDATE CAKE -> FAILED TO UPDATE DATA :" + err.Error())
 		return err

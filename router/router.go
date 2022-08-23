@@ -26,6 +26,8 @@ func NewCakeRouter(cakeController *controller.CakeController) CakeRouter {
 
 func (cr *cakeRouter) Route() {
 	router := httprouter.New()
+	log.Println("Server Running at :8080")
+
 	router.GET("/cakes", cr.CakeController.ListCake)
 	router.POST("/cakes", cr.CakeController.AddNewCake)
 	router.GET("/cakes/:{id}", cr.CakeController.DetailCake)

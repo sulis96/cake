@@ -62,12 +62,14 @@ func (cc *cakeController) ListCake(w http.ResponseWriter, r *http.Request, p htt
 	titleParam := r.URL.Query().Get("title")
 	cakes, err := cc.CakeService.ListCake(ctx, titleParam)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
 
 	cakesByte, err := json.Marshal(cakes)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
@@ -84,18 +86,21 @@ func (cc *cakeController) DetailCake(w http.ResponseWriter, r *http.Request, p h
 	idParamURL := strings.TrimPrefix(r.URL.Path, "/cakes/:")
 	idParam, err := strconv.Atoi(idParamURL)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad request", err.Error())
 		return
 	}
 
 	cakes, err := cc.CakeService.DetailCake(ctx, idParam)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
 
 	cakesByte, err := json.Marshal(cakes)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
@@ -112,6 +117,7 @@ func (cc *cakeController) AddNewCake(w http.ResponseWriter, r *http.Request, p h
 	var cake entity.Cake
 	err := json.NewDecoder(r.Body).Decode(&cake)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
@@ -119,12 +125,14 @@ func (cc *cakeController) AddNewCake(w http.ResponseWriter, r *http.Request, p h
 	validate := validator.New()
 	err = validate.Struct(cake)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad Request", err.Error())
 		return
 	}
 
 	err = cc.CakeService.AddNewCake(ctx, cake)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
@@ -141,6 +149,7 @@ func (cc *cakeController) UpdateCake(w http.ResponseWriter, r *http.Request, p h
 	idParamURL := strings.TrimPrefix(r.URL.Path, "/cakes/:")
 	idParam, err := strconv.Atoi(idParamURL)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad request", err.Error())
 		return
 	}
@@ -148,12 +157,22 @@ func (cc *cakeController) UpdateCake(w http.ResponseWriter, r *http.Request, p h
 	var cake entity.Cake
 	err = json.NewDecoder(r.Body).Decode(&cake)
 	if err != nil {
-		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad request", err.Error())
+		log.Println(err)
+		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(cake)
+	if err != nil {
+		log.Println(err)
+		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad Request", err.Error())
 		return
 	}
 
 	err = cc.CakeService.UpdateCake(ctx, idParam, cake)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
@@ -170,12 +189,14 @@ func (cc *cakeController) DeleteCake(w http.ResponseWriter, r *http.Request, p h
 	idParamURL := strings.TrimPrefix(r.URL.Path, "/cakes/:")
 	idParam, err := strconv.Atoi(idParamURL)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusBadRequest, "Bad request", err.Error())
 		return
 	}
 
 	err = cc.CakeService.DeleteCake(ctx, idParam)
 	if err != nil {
+		log.Println(err)
 		utils.HandleErrorResponse(w, http.StatusInternalServerError, "Internal server error", err.Error())
 		return
 	}
